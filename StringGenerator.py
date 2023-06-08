@@ -25,8 +25,8 @@ table.generate_contributes()
 table.send_signed_committed_contributes_to_server()
 table.send_signed_committed_contributes_to_players()
 
-table.send_openings_to_server()
-table.send_openings_to_players()
+table.send_signed_openings_to_server()
+table.send_signed_openings_to_players()
 
 table.compute_random_string()
 

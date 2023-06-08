@@ -95,7 +95,7 @@ class Table():
             player.check_signed_committed_contributes()
 
 
-    def send_openings_to_server(self):
+    def send_signed_openings_to_server(self):
         """
         Invio delle triple (chiave pubblica - opening - sign(opening)) dai giocatori al server
         opening contiene (contributo, randomness, set dei commit ricevuti)
@@ -107,7 +107,7 @@ class Table():
         self.__server.check_signed_openings()
 
 
-    def send_openings_to_players(self):
+    def send_signed_openings_to_players(self):
         """
         Invio delle triple (chiave pubblica - opening - sign(opening)) dal server ai giocatori
         opening contiene (contributo, randomness, set dei commit ricevuti)
