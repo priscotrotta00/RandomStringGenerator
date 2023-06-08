@@ -29,7 +29,7 @@ class Table():
         """
         messages = []
         for player in self.__players:
-            messages.append(player.send_signed_public_key())      #lista contenente per ogni giocatore (PK, sign(PK)) 
+            messages.append(player.send_signed_public_key())       
         self.__server.receive_signed_public_keys(messages)
         self.__server.check_signed_public_keys()
 
