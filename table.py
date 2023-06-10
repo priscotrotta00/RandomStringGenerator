@@ -1,7 +1,7 @@
 from cryptography.hazmat.primitives import serialization
 
 class Table():
-    __slots__ = {'__server', '__players', '__num_players'}
+    __slots__ = {'__server', '__players'}
 
     def __init__(self, server):
         self.__server = server
@@ -21,6 +21,7 @@ class Table():
         """
         for player in self.__players:
             player.generate_keys()
+            player.add_player()
 
 
     def send_signed_public_keys_to_server(self):

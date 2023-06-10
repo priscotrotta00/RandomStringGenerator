@@ -8,7 +8,7 @@ num_players = 3
 
 players = []
 for i in range(num_players):
-    player = Player()
+    player = Player(server.get_public_key())
     players.append(player)
     table.add_player(player)
 
@@ -32,7 +32,7 @@ table.compute_random_string()
 
 ################################################## CHECKS #####################################################
 
-verbose = 1
+verbose = 0
 if(verbose): 
     signed_public_keys = server.get_signed_public_keys()
     for player in players:

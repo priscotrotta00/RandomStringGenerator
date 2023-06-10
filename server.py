@@ -6,6 +6,7 @@ class Server(Party):
     def __init__(self):
         super().__init__()
         super().generate_keys()
+        self.num_players = self.num_players + 1
 
 
     def receive_signed_public_keys(self, signed_public_keys):
@@ -13,6 +14,8 @@ class Server(Party):
         Riceve dai giocatori le coppie (chiave pubblica - firma chiave pubblica)
         """
         for (public_key,sign) in signed_public_keys:
+            self.public_keys.append(public_key)
+            self.num_players = self.num_players + 1
             self.signed_public_keys[public_key] = sign
 
 

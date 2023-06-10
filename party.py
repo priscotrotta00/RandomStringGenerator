@@ -4,13 +4,15 @@ from cryptography.hazmat.primitives.asymmetric import ec
 import os
 
 class Party():
-    __slots__ = {'chosen_hash', 'private_key', 'public_key', 'public_key_sign' ,'signed_public_keys', 'public_keys_set_signs', 'contribute', 'randomness', 'commit', 'signed_commit'
+    __slots__ = {'chosen_hash', 'private_key', 'public_key', 'public_keys', 'num_players', 'public_key_sign' ,'signed_public_keys', 'public_keys_set_signs', 'contribute', 'randomness', 'commit', 'signed_commit'
                  'signed_committed_contributes', 'signed_opening', 'signed_openings', 'game_contributes', 'random_string'}
 
     def __init__(self):
         """
         Crea un oggetto partecipante alla partita. Non distingue tra giocatore e server
         """
+        self.public_keys = []                           # lista contenente le chiavi pubbliche di tutti i partecipanti
+        self.num_players=0                              # numero di partecipanti al tavolo
         self.signed_public_keys = dict()                # dizionario con chiave: PK e valore: sign(PK) di ciascun giocatore
         self.public_keys_set_signs = dict()                         # dizionario con chiave: PK e valore: sign(set)
         self.signed_committed_contributes = dict()      # dizionario con chiave: PK e valore: (commit,sign(commmit)) 
@@ -26,6 +28,7 @@ class Party():
         """
         self.private_key = ec.generate_private_key(ec.SECP384R1())
         self.public_key = self.private_key.public_key()
+        self.public_keys.append(self.public_key)
 
 
     def sign_message(self, msg):
@@ -54,8 +57,16 @@ class Party():
         """
         Controlla le firme delle chiavi pubbliche ricevute
         """
+        p=1     # si parte da 1 perché il Server non invia la propria chiave pubblica
         for public_key,sign in self.signed_public_keys.items():
+            if(public_key not in self.public_keys):
+                print('Un partecipante ha ricevuto un messaggio associato ad una chiave pubblica non appartenente al proprio set')
+                exit()
             self.verify_sign(public_key,sign,self.encode(public_key)) 
+            p = p + 1
+        if(p != self.num_players):
+            print('Un partecipante ha ricevuto meno rispetto al numero di partecipanti al tavolo')
+            exit()
 
 
     def create_encoded_signed_public_keys_set(self):
@@ -83,8 +94,16 @@ class Party():
         set = self.create_encoded_signed_public_keys_set()
 
         # e verifica la correttezza delle firme per tutti set ricevuti
+        p=1
         for public_key,sign in self.public_keys_set_signs.items():
+            if(public_key not in self.public_keys):
+                print('Un partecipante ha ricevuto un messaggio associato ad una chiave pubblica non appartenente al proprio set')
+                exit()
             self.verify_sign(public_key,sign,set) 
+            p = p + 1
+        if(p != self.num_players):
+            print('Un partecipante ha ricevuto meno rispetto al numero di partecipanti al tavolo')
+            exit()
 
 
     def generate_contribute(self):
@@ -108,8 +127,16 @@ class Party():
         """
         Controlla le coppie (contributo commitatto, firma) ricevute
         """
+        p=0
         for public_key,(commit,sign) in self.signed_committed_contributes.items():
+            if(public_key not in self.public_keys):
+                print('Un partecipante ha ricevuto un messaggio associato ad una chiave pubblica non appartenente al proprio set')
+                exit()
             self.verify_sign(public_key,sign,commit.encode())  
+            p = p + 1
+        if(p != self.num_players):
+            print('Un partecipante ha ricevuto meno rispetto al numero di partecipanti al tavolo')
+            exit()
 
 
     def create_encoded_opening(self):
@@ -135,11 +162,19 @@ class Party():
         """
         Controlla le firme delle aperture codificate in bytes costituite dalla tripla (contributo || randomness || set dei commit ricevuti)
         """
+        p=0
         for public_key,((contribute, randomness, commits_set),sign) in self.signed_openings.items():
+            if(public_key not in self.public_keys):
+                print('Un partecipante ha ricevuto un messaggio associato ad una chiave pubblica non appartenente al proprio set')
+                exit()
             encoded_opening = contribute + randomness
             for PK,commit in commits_set.items():                                         
                 encoded_opening = encoded_opening + self.encode(PK) + commit.encode(encoding='utf-8')
-            self.verify_sign(public_key,sign,encoded_opening) 
+            self.verify_sign(public_key,sign,encoded_opening)
+            p = p + 1
+        if(p != self.num_players):
+            print('Un partecipante ha ricevuto meno rispetto al numero di partecipanti al tavolo')
+            exit() 
 
 
     def encode(self, msg):
@@ -166,6 +201,10 @@ class Party():
             random_string = self.__bitwise_xor_bytes(random_string,contribute)
         self.random_string = random_string
         return self.random_string
+
+
+    def add_player(self):
+        self.num_players = self.num_players + 1
 
 
     # Metodi get
