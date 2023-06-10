@@ -4,8 +4,8 @@ from cryptography.hazmat.primitives.asymmetric import ec
 import os
 
 class Party():
-    __slots__ = {'chosen_hash', 'private_key', 'public_key', 'signed_public_keys', 'public_keys_set_signs', 'contribute', 'randomness', 'commit', 
-                 'signed_committed_contributes', 'signed_openings', 'game_contributes', 'random_string'}
+    __slots__ = {'chosen_hash', 'private_key', 'public_key', 'public_key_sign' ,'signed_public_keys', 'public_keys_set_signs', 'contribute', 'randomness', 'commit', 'signed_commit'
+                 'signed_committed_contributes', 'signed_opening', 'signed_openings', 'game_contributes', 'random_string'}
 
     def __init__(self):
         """
