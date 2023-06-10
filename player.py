@@ -3,8 +3,10 @@ from commitment_scheme import CommitmentScheme
 
 class Player(Party):
 
-    def __init__(self):
+    def __init__(self, server_public_key):
         super().__init__()
+        self.public_keys.append(server_public_key)
+        self.num_players = self.num_players + 1
 
 
     def send_signed_public_key(self):
@@ -28,6 +30,9 @@ class Player(Party):
                 if(signed_public_key != self.public_key_sign):
                     print("La coppia (public_key, firma) ricevuta da un player è diversa da quella da lui generata")
                     exit()
+            else: 
+                self.public_keys.append(public_key)
+                self.num_players = self.num_players + 1
             self.signed_public_keys[public_key]=signed_public_key
  
 
@@ -35,8 +40,8 @@ class Player(Party):
         """
         Invia al server la coppia (chiave pubblica - firma del set di chiavi pubbliche)
         """
-        set_sign = self.sign_public_keys_set()
-        return (self.public_key, set_sign)
+        public_keys_set_sign = self.sign_public_keys_set()
+        return (self.public_key, public_keys_set_sign)
 
 
     def receive_public_keys_set_signs(self, set_signs):
