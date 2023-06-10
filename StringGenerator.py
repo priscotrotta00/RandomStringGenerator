@@ -3,8 +3,10 @@ from server import Server
 from table import Table
 
 server = Server()
+print('server:')
+print(server.get_public_key())
 table = Table(server)
-num_players = 3
+num_players = 2
 
 players = []
 for i in range(num_players):
@@ -12,7 +14,10 @@ for i in range(num_players):
     players.append(player)
     table.add_player(player)
 
+print('players:')
 table.generate_players_keys()
+print('\n\n')
+
 
 table.send_signed_public_keys_to_server()
 table.send_signed_public_keys_to_players()

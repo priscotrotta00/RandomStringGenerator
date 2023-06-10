@@ -47,6 +47,7 @@ class Party():
         Genera la coppia (chiave pubblica, firma) 
         """
         sign = self.sign_message(self.encode(self.public_key))
+        self.signed_public_keys[self.public_key] = sign
         return (self.public_key,sign)
 
 
@@ -63,7 +64,11 @@ class Party():
         Crea il set contenente le public key ricevute e le firme associate codificato in bytes
         """
         encoded_set = b''
+        print('\n\n\n')
+        print(self.public_key)
+        print('crea il proprio set\n')
         for public_key,sign in self.signed_public_keys.items():
+            print(public_key)
             encoded_set = encoded_set + self.encode(public_key) + sign
         return encoded_set
     
@@ -72,17 +77,21 @@ class Party():
         """
         Firma il set contenente le public key ricevute e le firme associate già codificato in bytes
         """
+        print('FIRMA ------------------')
         encoded_set = self.create_encoded_signed_public_keys_set()
-        return self.sign_message(encoded_set)
+        sign = self.sign_message(encoded_set)
+        self.public_keys_set_signs[self.public_key] = sign
+        return sign
 
 
     def check_public_keys_set_signs(self):
         """
         Controlla le firme dei set di contenenti le chiavi pubbliche ricevuti
         """
+        print('CHECK ------------------')
         set = self.create_encoded_signed_public_keys_set()
 
-        # e verifica la correttezza delle firme per tutti set ricevuti
+        # e verifica la correttezza delle firme per tutti i set ricevuti
         for public_key,sign in self.public_keys_set_signs.items():
             self.verify_sign(public_key,sign,set) 
 

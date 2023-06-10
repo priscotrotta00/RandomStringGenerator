@@ -12,8 +12,11 @@ class Server(Party):
         """
         Riceve dai giocatori le coppie (chiave pubblica - firma chiave pubblica)
         """
-        for (public_key,sign) in signed_public_keys:
-            self.signed_public_keys[public_key] = sign
+        for (public_key,public_key_sign) in signed_public_keys:
+            self.signed_public_keys[public_key] = public_key_sign
+
+        (public_key,sign) = self.sign_public_key()
+        self.signed_public_keys[self.public_key] = sign
 
 
     def send_signed_public_keys(self):
@@ -28,7 +31,14 @@ class Server(Party):
         Riceve dai giocatori le firme dei set contenenti le public key ricevute e le firme associate già codificati in bytes
         """
         for (public_key,public_key_set_sign) in public_keys_set_signs:
-            self.public_keys_set_signs[public_key] = public_key_set_sign
+            if(public_key == self.public_key):
+                if(public_key_set_sign != self.public_keys_set_signs[self.public_key]):
+                    print('La firma del set di chiavi pubbliche ricevuta da un partecipante non corrisponde con quella da lui generata')
+                    exit()
+            else:
+                self.public_keys_set_signs[public_key] = public_key_set_sign
+            
+            
 
 
     def send_public_keys_set_signs(self):

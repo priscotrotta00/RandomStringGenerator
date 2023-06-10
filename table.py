@@ -21,6 +21,7 @@ class Table():
         """
         for player in self.__players:
             player.generate_keys()
+            print(player.get_public_key())
 
 
     def send_signed_public_keys_to_server(self):

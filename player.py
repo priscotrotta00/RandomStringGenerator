@@ -18,8 +18,13 @@ class Player(Party):
         """
         Riceve dal server le coppie (chiave pubblica, firma chiave pubblica)
         """
-        for public_key,signed_public_key in signed_public_keys.items():
-            self.signed_public_keys[public_key]=signed_public_key
+        for public_key,public_key_sign in signed_public_keys.items():
+            if(public_key == self.public_key):
+                if(public_key_sign != self.signed_public_keys[self.public_key]):
+                    print('La firma della chiave pubblica ricevuta da un partecipante non corrisponde con quella da lui generata')
+                    exit()
+            else:
+                self.signed_public_keys[public_key] = public_key_sign
  
 
     def send_public_keys_set_sign(self):
@@ -30,12 +35,17 @@ class Player(Party):
         return (self.public_key, set_sign)
 
 
-    def receive_public_keys_set_signs(self, set_signs):
+    def receive_public_keys_set_signs(self, public_keys_set_signs):
         """
         Riceve dal server le coppie (chiave pubblica, firma del set di chiavi pubbliche)
         """
-        for public_key,set_sign in set_signs.items():   #per ogni chiave pubblica è associata la firma che ha ottenuto a partire dal proprio set di chiavi pubbliche
-            self.public_keys_set_signs[public_key]=set_sign    
+        for public_key,public_keys_set_sign in public_keys_set_signs.items():   #per ogni chiave pubblica è associata la firma che ha ottenuto a partire dal proprio set di chiavi pubbliche
+            if(public_key == self.public_key):
+                if(public_keys_set_sign != self.public_keys_set_signs[self.public_key]):
+                    print('La firma del set di chiavi pubbliche ricevuta da un partecipante non corrisponde con quella da lui generata')
+                    exit()
+            else:
+                self.public_keys_set_signs[public_key] = public_keys_set_sign   
 
 
     def send_signed_committed_contribute(self):
